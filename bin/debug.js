@@ -2,6 +2,7 @@ const detect = require('detect-port')
 const uuid = require('uuid')
 const { api } = require('../index')
 const compile = require('@weexbox/builder')
+const chalk = require('chalk')
 
 module.exports = {
   run(source) {
@@ -20,7 +21,7 @@ module.exports = {
         async (error, output, json) => {
           let bundles = []
           if (error) {
-            console.log(Array.isArray(error) ? error.join('\n') : error)
+            console.log(chalk.red(Array.isArray(error) ? error.join('\n') : error))
           }
           else {
             bundles = json.assets.map(asset => {
