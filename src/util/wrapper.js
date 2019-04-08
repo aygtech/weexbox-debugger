@@ -51,7 +51,7 @@ const bundleWrapper = (code, sourceUrl) => {
     '__weex_data__',
     '__weex_downgrade__',
     '__weex_require_module__',
-    'Vue',
+    'Vue'
   ]
   const bundlewrapper =
     'function __weex_bundle_entry__(' + injectedGlobals.join(',') + '){'
@@ -71,13 +71,15 @@ const transformUrlToLocalUrl = sourceURl => {
     const query = queryParser.parse(URL.parse(sourceURl).query)
     if (query['_wx_tpl']) {
       bundleUrl = util.normalize(query['_wx_tpl']).replace(rHttpHeader, '')
-    } else {
+    }
+    else {
       bundleUrl = util.normalize(sourceURl).replace(rHttpHeader, '')
     }
-  } else {
+  }
+  else {
     bundleUrl = sourceURl.replace(
       /^(https?|taobao|qap):\/\/(.*your_current_ip):(\d+)\//i,
-      'file://',
+      'file://'
     )
   }
   if (bundleUrl.charAt(bundleUrl.length - 1) === '?') {
@@ -151,88 +153,6 @@ __EventEmitter__.prototype = {
     return context;
   }
 };`
-
-const mockBrowserApi = `// Redefine navigator 
-Object.defineProperty(navigator, 'appCodeName', {
-  get: function() {
-    return 'Weex Debugger';
-  }
-});
-  
-Object.defineProperty(navigator, 'product', {
-  get: function() {
-    return 'Weex';
-  }
-});
-
-// Redefine console
-var __origConsole__ = this.console;
-var __rewriteLog__ = function () {
-  var LEVELS = ['error', 'warn', 'info', 'log', 'debug'];
-  var backupConsole = {
-    error: __origConsole__.error,
-    warn: __origConsole__.warn,
-    info: __origConsole__.info,
-    log: __origConsole__.log,
-    debug: __origConsole__.debug
-  };
-  function resetConsole() {
-    self.console.error = backupConsole.error;
-    self.console.warn = backupConsole.warn;
-    self.console.info = backupConsole.info;
-    self.console.log = backupConsole.log;
-    self.console.debug = backupConsole.debug;
-    self.console.time = __origConsole__.time;
-    self.console.timeEnd = __origConsole__.timeEnd;
-  }
-  
-  function noop() {}
-  return function (logLevel) {
-    resetConsole();
-    LEVELS.slice(LEVELS.indexOf(logLevel) + 1).forEach(function (level) {
-      self.console[level] = noop;
-    })
-  }
-}();
-
-// Redefine timer
-var __cachedSetTimeout__ = this.setTimeout;
-Object.defineProperty(this, 'setTimeout', {
-  get: function () {
-    return __cachedSetTimeout__;
-  },
-  set: function () {}
-});
-var __cachedSetInterval__ = this.setInterval;
-Object.defineProperty(this, 'setInterval', {
-  get: function () {
-    return __cachedSetInterval__;
-  },
-  set: function () {}
-});
-var __cachedClearTimeout__ = this.clearTimeout;
-Object.defineProperty(this, 'clearTimeout', {
-  get: function () {
-    return __cachedClearTimeout__;
-  },
-  set: function () {}
-});
-var __cachedClearInterval__ = this.clearInterval;
-Object.defineProperty(this, 'clearInterval', {
-  get: function () {
-    return __cachedClearInterval__;
-  },
-  set: function () {}
-});
-
-// Redefine onmessage
-var __eventEmitter__ = new __EventEmitter__();
-var __postmessage__ = self.postMessage
-self.addEventListener('message', function(message) {
-  __eventEmitter__.emit(message.data && message.data.method, message.data);
-}, false);
-
-`
 
 const mockContextApi = `// Redefine the JSFramework API
 var __syncRequest__ = function(data, channelId) {
@@ -344,8 +264,113 @@ self.nativeLog = function (args) {
 };`
 
 const generateSandboxWorkerEntry = env => {
+  const mockBrowserApi = `// Redefine navigator 
+Object.defineProperty(navigator, 'appCodeName', {
+  get: function() {
+    return '${env.device.name}';
+  }
+});
+
+Object.defineProperty(navigator, 'appName', {
+  get: function() {
+    return '${env.environment.WXEnvironment.appName}';
+  }
+});
+
+Object.defineProperty(navigator, 'appVersion', {
+  get: function() {
+    return '${env.environment.WXEnvironment.appVersion}';
+  }
+});
+  
+Object.defineProperty(navigator, 'product', {
+  get: function() {
+    return '${env.device.name}';
+  }
+});
+
+Object.defineProperty(navigator, 'platform', {
+  get: function() {
+    return '${env.device.platform}';
+  }
+});
+
+Object.defineProperty(navigator, 'userAgent', {
+  get: function() {
+    return '${env.device.platform === 'android' ? 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36' : 'Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25'}';
+  }
+});
+
+// Redefine console
+var __origConsole__ = this.console;
+var __rewriteLog__ = function () {
+  var LEVELS = ['error', 'warn', 'info', 'log', 'debug'];
+  var backupConsole = {
+    error: __origConsole__.error,
+    warn: __origConsole__.warn,
+    info: __origConsole__.info,
+    log: __origConsole__.log,
+    debug: __origConsole__.debug
+  };
+  function resetConsole() {
+    self.console.error = backupConsole.error;
+    self.console.warn = backupConsole.warn;
+    self.console.info = backupConsole.info;
+    self.console.log = backupConsole.log;
+    self.console.debug = backupConsole.debug;
+    self.console.time = __origConsole__.time;
+    self.console.timeEnd = __origConsole__.timeEnd;
+  }
+  
+  function noop() {}
+  return function (logLevel) {
+    resetConsole();
+    LEVELS.slice(LEVELS.indexOf(logLevel) + 1).forEach(function (level) {
+      self.console[level] = noop;
+    })
+  }
+}();
+
+// Redefine timer
+var __cachedSetTimeout__ = this.setTimeout;
+Object.defineProperty(this, 'setTimeout', {
+  get: function () {
+    return __cachedSetTimeout__;
+  },
+  set: function () {}
+});
+var __cachedSetInterval__ = this.setInterval;
+Object.defineProperty(this, 'setInterval', {
+  get: function () {
+    return __cachedSetInterval__;
+  },
+  set: function () {}
+});
+var __cachedClearTimeout__ = this.clearTimeout;
+Object.defineProperty(this, 'clearTimeout', {
+  get: function () {
+    return __cachedClearTimeout__;
+  },
+  set: function () {}
+});
+var __cachedClearInterval__ = this.clearInterval;
+Object.defineProperty(this, 'clearInterval', {
+  get: function () {
+    return __cachedClearInterval__;
+  },
+  set: function () {}
+});
+
+// Redefine onmessage
+var __eventEmitter__ = new __EventEmitter__();
+var __postmessage__ = self.postMessage
+self.addEventListener('message', function(message) {
+  __eventEmitter__.emit(message.data && message.data.method, message.data);
+}, false);
+
+`
   const worker = fse.readFileSync(
-    path.join(__dirname, '../worker/sandbox_worker.js'),
+    path.join(__dirname, '../worker/sandbox_worker.js')
   )
   const mockAndroidApi = env.isLayoutAndSandbox
     ? `self.callCreateBody = function (instance, domStr) {
@@ -485,7 +510,112 @@ ${worker}
 }
 
 const generateWorkerEntry = env => {
-  const worker = fse.readFileSync(path.join(__dirname, "../worker/worker.js"));
+  const mockBrowserApi = `// Redefine navigator 
+Object.defineProperty(navigator, 'appCodeName', {
+  get: function() {
+    return '${env.device.name}';
+  }
+});
+
+Object.defineProperty(navigator, 'appName', {
+  get: function() {
+    return '${env.environment.WXEnvironment.appName}';
+  }
+});
+
+Object.defineProperty(navigator, 'appVersion', {
+  get: function() {
+    return '${env.environment.WXEnvironment.appVersion}';
+  }
+});
+  
+Object.defineProperty(navigator, 'product', {
+  get: function() {
+    return '${env.device.name}';
+  }
+});
+
+Object.defineProperty(navigator, 'platform', {
+  get: function() {
+    return '${env.device.platform}';
+  }
+});
+
+Object.defineProperty(navigator, 'userAgent', {
+  get: function() {
+    return '${env.device.platform === 'android' ? 'Mozilla/5.0 (Linux; Android 4.4.2; Nexus 4 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.114 Mobile Safari/537.36' : 'Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25'}';
+  }
+});
+
+// Redefine console
+var __origConsole__ = this.console;
+var __rewriteLog__ = function () {
+  var LEVELS = ['error', 'warn', 'info', 'log', 'debug'];
+  var backupConsole = {
+    error: __origConsole__.error,
+    warn: __origConsole__.warn,
+    info: __origConsole__.info,
+    log: __origConsole__.log,
+    debug: __origConsole__.debug
+  };
+  function resetConsole() {
+    self.console.error = backupConsole.error;
+    self.console.warn = backupConsole.warn;
+    self.console.info = backupConsole.info;
+    self.console.log = backupConsole.log;
+    self.console.debug = backupConsole.debug;
+    self.console.time = __origConsole__.time;
+    self.console.timeEnd = __origConsole__.timeEnd;
+  }
+  
+  function noop() {}
+  return function (logLevel) {
+    resetConsole();
+    LEVELS.slice(LEVELS.indexOf(logLevel) + 1).forEach(function (level) {
+      self.console[level] = noop;
+    })
+  }
+}();
+
+// Redefine timer
+var __cachedSetTimeout__ = this.setTimeout;
+Object.defineProperty(this, 'setTimeout', {
+  get: function () {
+    return __cachedSetTimeout__;
+  },
+  set: function () {}
+});
+var __cachedSetInterval__ = this.setInterval;
+Object.defineProperty(this, 'setInterval', {
+  get: function () {
+    return __cachedSetInterval__;
+  },
+  set: function () {}
+});
+var __cachedClearTimeout__ = this.clearTimeout;
+Object.defineProperty(this, 'clearTimeout', {
+  get: function () {
+    return __cachedClearTimeout__;
+  },
+  set: function () {}
+});
+var __cachedClearInterval__ = this.clearInterval;
+Object.defineProperty(this, 'clearInterval', {
+  get: function () {
+    return __cachedClearInterval__;
+  },
+  set: function () {}
+});
+
+// Redefine onmessage
+var __eventEmitter__ = new __EventEmitter__();
+var __postmessage__ = self.postMessage
+self.addEventListener('message', function(message) {
+  __eventEmitter__.emit(message.data && message.data.method, message.data);
+}, false);
+
+`
+  const worker = fse.readFileSync(path.join(__dirname, '../worker/worker.js'))
   const androidMockApi = env.isLayoutAndSandbox
     ? `self.callCreateBody = function (instance, domStr) {
   if (!domStr) return;
@@ -604,7 +734,7 @@ self.callRemoveEvent = function (instance, ref, event) {
   };
   __postData__(payload);
 }`
-    : "";
+    : ''
   let environment = `${eventConstructor}
   
 ${mockBrowserApi}
@@ -614,24 +744,24 @@ ${mockContextApi}
 ${androidMockApi}
 
 self.$$frameworkFlag = {};
-`;
+`
   if (env.jsframework) {
-    environment += `importScripts('${env.jsframework}');\n`;
+    environment += `importScripts('${env.jsframework}');\n`
     // environment += `importScripts('/lib/runtime/js-framework.js');\n`
   }
   if (env.importScripts && env.importScripts.length > 0) {
     env.importScripts.forEach(script => {
-      environment += `importScripts('${script}');\n`;
-    });
+      environment += `importScripts('${script}');\n`
+    })
   }
   if (env.sourceUrl) {
-    environment += `importScripts('${env.sourceUrl}');\n`;
+    environment += `importScripts('${env.sourceUrl}');\n`
   }
   return `
 ${environment}
 ${worker}
-  `;
-};
+  `
+}
 
 const pickDomain = str => {
   if (/file:\/\//.test(str)) {

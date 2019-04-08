@@ -19,60 +19,53 @@ debuggerRouter
     if (domain === 'WxDebug') {
       if (method === 'WxDebug.setLogLevel') {
         device.logLevel = payload.params.data
-        message.payload = {
-          method: 'WxDebug.setLogLevel',
-          params: {
-            logLevel: payload.params.data,
-          },
-        }
         debuggerRouter.pushMessage('runtime.worker', message.terminalId, {
           method: 'WxDebug.setLogLevel',
           params: {
-            logLevel: payload.params.data,
-          },
+            logLevel: payload.params.data
+          }
         })
-        debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadInspector',
-        })
-        debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadRuntime',
-        })
-      } else if (method === 'WxDebug.setElementMode') {
+      }
+      else if (method === 'WxDebug.setElementMode') {
         device.elementMode = payload.params.data
         message.payload = {
           method: 'WxDebug.setElementMode',
           params: {
-            mode: payload.params.data,
-          },
+            mode: payload.params.data
+          }
         }
         debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadInspector',
+          method: 'WxDebug.reloadInspector'
         })
         debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadRuntime',
+          method: 'WxDebug.reloadRuntime'
         })
-      } else if (method === 'WxDebug.network') {
+      }
+      else if (method === 'WxDebug.network') {
         device && (device.network = payload.params.enable)
         message.payload = {
           method: 'WxDebug.network',
           params: {
-            enable: payload.params.enable,
-          },
+            enable: payload.params.enable
+          }
         }
         debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadInspector',
+          method: 'WxDebug.reloadInspector'
         })
         debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadRuntime',
+          method: 'WxDebug.reloadRuntime'
         })
-      } else if (method === 'WxDebug.enable') {
+      }
+      else if (method === 'WxDebug.enable') {
         device && (device.remoteDebug = true)
-      } else if (method === 'WxDebug.disable') {
+      }
+      else if (method === 'WxDebug.disable') {
         device && (device.remoteDebug = false)
         debuggerRouter.pushMessage('page.debugger', message.terminalId, {
-          method: 'WxDebug.reloadInspector',
+          method: 'WxDebug.reloadInspector'
         })
-      } else if (method === 'WxDebug.setContextEnvironment') {
+      }
+      else if (method === 'WxDebug.setContextEnvironment') {
         if (!config.env[payload.params.channelId]) {
           config.env[payload.params.channelId] = {}
         }
@@ -81,7 +74,7 @@ debuggerRouter
             jsframework: '',
             jsservice: [],
             dependencejs: '',
-            sourcejs: '',
+            sourcejs: ''
           }
         }
         config.env[payload.params.channelId]['polify']['jsframework'] =
@@ -97,20 +90,21 @@ debuggerRouter
         config.env[payload.params.channelId]['polify']['sourcejs'] =
           payload.params['sourcejs']
         message.discard()
-      } else if (method === 'WxDebug.postTemplateFile') {
+      }
+      else if (method === 'WxDebug.postTemplateFile') {
         let templateFile = new MemoryFile(
           `${uuidv1()}.js`,
-          payload.params.value,
+          payload.params.value
         ).getUrl()
         debuggerRouter.pushMessage('page.debugger', message.terminalId, {
           method: 'WxDebug.getTemplateFile',
           params: {
-            value: templateFile,
-          },
+            value: templateFile
+          }
         })
         message.discard()
       }
-    } 
+    }
     message.to('proxy.native')
   })
   .at('page.debugger')

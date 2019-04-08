@@ -1,12 +1,16 @@
-node_modules
-demo
-.idea/
-.DS_Store
-.vscode/
 lib/
-dest/
-frontend/weex
+node_modules/
 
-!frontend/lib/
+# coverage
+coverage/
+!frontend/src/assets/inspector/coverage/
 
-frontend/lib/temp
+package-lock.json
+
+frontend/node_modules/
+frontend/public/
+frontend/coverage/
+frontend/src/css
+frontend/src/**/*.js
+frontend/src/**/*.map
+frontend/*.log
