@@ -1,7 +1,7 @@
 {
   "name": "@weexbox/debugger",
   "description": "weex developer tool for debugging weex app with chrome devtool",
-  "version": "2.0.0-beta",
+  "version": "2.0.2-beta",
   "author": "myeveryheart@qq.com",
   "license": "MIT",
   "repository": {
@@ -21,7 +21,7 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@weexbox/builder": "^2.0.8-beta",
+    "@weexbox/builder": "^2.0.10-beta",
     "boxen": "^3.1.0",
     "chalk": "^2.4.2",
     "commander": "^2.20.0",
